@@ -1,0 +1,57 @@
+namespace: log
+image:
+  repository: cowiz/utils 
+  tag: fluentd-s3-v1 
+  pullPolicy: IfNotPresent
+
+busybox:
+  repository: busybox
+  tag: 1.31.0
+
+awsRegion: us-east-1
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 512Mi
+
+data:
+  fluent.conf: |
+   <source>
+      @type tail
+      @id fluentd-s3-tailer
+      path /var/log/containers/**nginx**.log
+      pos_file /var/log/fluentd-s3.pos
+      tag for_fluentd_s3
+      format json
+      <parse>
+        @type json
+        json_parser json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
+    <match for_fluentd_s3>
+      @type s3
+      s3_region "us-east-1" 
+      s3_bucket "logs-us"
+      path logs/%Y/%m/%d/
+      s3_object_key_format %{path}nginx_T%H%M%SZ_%{index}.%{file_extension}
+
+      buffer_path /var/log/fluentd/s3
+
+      <format>
+        @type json
+      </format>
+
+      <buffer tag,time>
+        timekey_wait 10m
+        timekey 1m 
+        timekey_use_utc true
+      </buffer>
+
+      <instance_profile_credentials>
+        ip_address 169.254.169.254
+        port 80
+      </instance_profile_credentials>
+    </match>
