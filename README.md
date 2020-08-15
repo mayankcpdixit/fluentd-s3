@@ -7,7 +7,7 @@ A Daeamonset will start with pods launching fluentd with config as mentione din 
 ## Checklist
 1. [Create an IAM role](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html#create-iam-role) & an S3 bucket, keep the role arn handy to prode in `helm install` command
 2. Install [kube2iam](https://github.com/jtblin/kube2iam) on all nodes
-3. Update region and bucket info in the `values.yaml` 
+3. Update region and bucket info in the [values.yaml](https://github.com/mayankcpdixit/fluentd-s3-publisher/blob/master/values.yaml#L36) 
 4. Run below commands to install/upgrade/uninstall 
 
 ## Handy Commands 
